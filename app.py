@@ -10,18 +10,9 @@ st.title("DMトラッキング管理システム")
 @st.cache_resource
 def warm_up_backend():
     try:
-        dummy_uid = "warmup-dummy"
-        response = requests.post(
-            "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net/log",
-            params={
-                "uid": dummy_uid,
-                "client_id": 0,
-                "zebra_id": "warmup",
-                "campaign_name": "warmup",
-                "target_url": "https://example.com",
-                "slug_prefix": "warmup"
-            },
-            timeout=5
+        response = requests.get(
+            "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net/healthz",
+            timeout=5,
         )
         return response.status_code == 200
     except Exception:

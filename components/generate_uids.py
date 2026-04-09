@@ -2,6 +2,7 @@ import streamlit as st
 import uuid
 import pandas as pd
 import requests
+import os
 
 def generate_uids_ui():
     st.header("UID一括生成フォーム")
@@ -29,10 +30,21 @@ def generate_uids_ui():
                 "slug_prefix": slug_prefix
             })
 
+        backend_base_url = os.getenv(
+            "BACKEND_BASE_URL",
+            "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net",
+        ).rstrip("/")
+        public_base_url = os.getenv("PUBLIC_BASE_URL", "https://tr.fujiplus.jp").rstrip("/")
+
+        api_key = os.getenv("BACKEND_API_KEY")
+        headers = {"X-API-Key": api_key} if api_key else {}
+
         # 🚀 一括登録（POST /log/bulk）
         response = requests.post(
-            "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net/bulk_log",
-            json=logs
+            f"{backend_base_url}/bulk_log",
+            json=logs,
+            headers=headers,
+            timeout=15,
         )
 
         if response.status_code != 200:
@@ -40,13 +52,11 @@ def generate_uids_ui():
             return
 
         results = response.json()
-        short_base_url = "https://tr.fujiplus.jp"
-        base_url = "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net"
 
         uid_list = []
         for log, result in zip(logs, results):
-            uid_url = f"{base_url}/track?uid={log['uid']}"
-            slug_url = f"{short_base_url}/track/{result['slug']}"
+            uid_url = f"{public_base_url}/track?uid={log['uid']}"
+            slug_url = f"{public_base_url}/track/{result['slug']}"
 
             uid_list.append({
                 "client_id": log["client_id"],
