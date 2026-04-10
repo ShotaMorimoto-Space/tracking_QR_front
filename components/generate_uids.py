@@ -34,7 +34,7 @@ def generate_uids_ui():
             "BACKEND_BASE_URL",
             "https://qr-tracking-dba2gxd0gzd7a7h6.koreacentral-01.azurewebsites.net",
         ).rstrip("/")
-        public_base_url = os.getenv("PUBLIC_BASE_URL", "https://tr.fujiplus.jp").rstrip("/")
+        public_base_url = (os.getenv("PUBLIC_BASE_URL") or "https://tr.fujiplus.jp").rstrip("/")
 
         api_key = os.getenv("BACKEND_API_KEY")
         headers = {"X-API-Key": api_key} if api_key else {}
